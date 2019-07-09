@@ -8,7 +8,7 @@
 
 	<script type="text/javascript" src="{% static 'coloring/vendors/jquery/jquery-3.3.1.min.js' %}"></script>
 	<script type="text/javascript" src="{% static 'coloring/vendors/paper/paper-full.min.js' %}"></script>
-
+  <script type="text/javascript" src="js/paper.js"></script>
 	<style type="text/css">
 		#color-palette {
 			width: 300px;
@@ -37,7 +37,7 @@
 		}
 	</style>
 
-	<script type="text/javascript" canvas="canvas">
+	<script type="text/javascript" canvas="myCanvas">
 		window.onload = function() {
 			var canvas = document.getElementById('myCanvas');
 
@@ -50,24 +50,48 @@
 
 			// color palette
 			var cp = {
-				history: ["#000000"], // black selected by default
+				history: ["#800000", "#000000"], // black selected by default
 				options: [],
 				$container: $('#color-palette')
 			}
 
 			// your rectangle gradient interaction goes in this function
 			// you may also add code outside of the function (e.g., global variables)
-			function myGradientInteraction(){
+      
+      function myGradientInteraction(){
 				var tool = new paper.Tool();
-
+        var rectangle = new paper.Rectangle({
+    from: [200, 300],
+    to: [300, 200]
+});
+        var path = new paper.Path.Rectangle(rectangle);
+        path.fillColor = 'red'; 
+        start = 0;
+        end = 0;
+        
 				tool.onMouseDown = function (event) {
-
-				}
-
+          start = event.downPoint;
+        }
+        
 				tool.onMouseUp = function (event) {
-					
+            end = event.point;
+          rectangle1 = new paper.Rectangle(300, 300, 200, 100);
+        path = new paper.Path.Rectangle({
+    from: [200,300], 
+    to: [300,200],
+    fillColor: {
+        gradient: {
+            stops: [cp.history[cp.history.length -2], cp.history[cp.history.length -1]]
+        },
+        origin: start,
+        destination: end
+    }
+});
+
 				}
 			}
+      
+
 
 			// your custom interaction goes here!
 			// you may replace everything
@@ -83,6 +107,15 @@
 			}
 
 
+      function componentToHex(c) {
+  var hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+      
 			// create a color palette with the given colors
 			function createColorPalette(colors){
 
@@ -142,7 +175,8 @@
 </head>
 <body>	
 
-	<canvas id="myCanvas" width="750px" height="750px"></canvas>
+	<canvas id="myCanvas" width="750px" height="750px">
+  </canvas>
 	<div id="color-palette"></div>
 </body>
 </html>
